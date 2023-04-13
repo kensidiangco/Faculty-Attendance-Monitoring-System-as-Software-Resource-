@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}FAMS | {{emp.name}}{% endblock title %}
+
+{% block content %}
+    <div class="flex flex-col gap-8">
+        <label class="font-bold text-xl text-gray-600">EMPLOYEE INFORMATION</label>
+        <p id="date-time" class="text-sm"></p>
+        {% for message in messages %}
+            {% if message.tags == 'error' %}
+                <p class="text-sm text-red-600 text-center">{{ message }}</p>
+            {% else %}
+                <p class="text-sm text-green-600 text-center">{{ message }}</p>
+            {% endif %}
+        {% endfor %}
+        <div class="grid grid-cols-4">
+            <div class="flex justify-center">
+                <img src="{% static 'images/avatar.png'%}" class="cursor-pointer transition transition-delay-1 md:p-px md:w-48 w-36 py-4" />
+            </div>
+            <div class="flex flex-col gap-2">
+                <div class="flex flex-col">
+                    <label class="text-sm text-gray-600 font-bold">EMPLOYEE ID:</label>
+                    {{emp.employee_ID}}
+                </div>
+                <div class="flex flex-col">
+                    <label class="text-sm text-gray-600 font-bold">NAME:</label>
+                    {{emp.name}}
+                </div>
+                <div class="flex flex-col">
+                    <label class="text-sm text-gray-600 font-bold">DEPARTMENT:</label>
+                    {{emp.department.department_name}}
+                </div>
+            </div>
+            <div class="flex flex-col gap-2">
+                <div class="flex flex-col">
+                    <label class="text-sm text-gray-600 font-bold">JOB POSITION:</label>
+                    {{emp.position}}
+                </div>
+                <div class="flex flex-col">
+                    <label class="text-sm text-gray-600 font-bold">EMPLOYEE STATUS:</label>
+                    {{emp.employee_status}}
+                </div>
+                <div class="flex flex-col">
+                    <label class="text-sm text-gray-600 font-bold">STATUS:</label>
+                    {% if emp.working_status == "ACTIVE" %}
+                        <p class="text-green-500 font-bold">{{emp.working_status}}</p>
+                    {% else %}
+                        <p class="text-red-500 font-bold">{{emp.working_status}}</p>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="flex flex-col gap-2">
+                <label class="text-gray-600 font-bold">ATTENDANCE:</label>
+                <div class="flex flex-col">
+                    <label class="text-sm text-gray-600 font-bold">STATUS:</label>
+                    <p class="">{{emp.status}}</p>
+                </div>
+                <div class="flex flex-col">
+                    <label class="text-sm text-gray-600 font-bold">LATE COUNT:</label>
+                    <p class="text-yellow-500 font-bold">{{late_count}}</p>
+                </div>
+                <div class="flex flex-col">
+                    <label class="text-sm text-gray-600 font-bold">NOT LATE COUNT:</label>
+                    <p class="text-green-500 font-bold">{{not_late_count}}</p>
+                </div>
+            </div>
+            
+        </div>
+        <label class="text-gray-600 font-bold text-xl">SCHEDULES</label>
+        <div class="flex flex-col">
+            <form method="POST" class="pb-4">
+                {% csrf_token %}
+                <label class="text-gray-600 font-bold text-sm ml-12">EXPORT ATTENDANCE RECORD</label>
+                <div class="flex justify-center items-center gap-2">
+                    <label for="date-from">Date from</label>
+                    <input 
+                        type="date" 
+                        id="dateFrom" 
+                        name="dateFrom" 
+                        class="rounded-md" 
+                        onkeyup="myFunction()"
+                        required 
+                    />
+                    <label for="date-to">Date to</label>
+                    <input 
+                            type="date" 
+                            id="dateTo" 
+                            name="dateTo" 
+                            class="rounded-md" 
+                            onkeyup="myFunction()"
+                            required 
+                        />
+                    <button type="submit" name='export_dtr' class="bg-gradient-to-b from-[#7F8B69] to-[#18442D] hover:from-[#52735D] hover:to-[#52735D] shadow-xl py-2 px-4 rounded-md text-white font-bold transition-delay-1">Export Excel</button>
+                </div>
+            </form>
+
+            <div class='flex justify-center pt-4'>
+                <div class="bg-white rounded-md shadow-md w-full overflow-x-auto max-w-screen-lg">
+                    <table class="table-auto overflow-scroll overflow-x-auto w-full border-separate rounded-md md:shadow-md">
+                        <tr class="border boreder-2 bg-[#52735D] rounded-md text-white">
+                            <th class="p-2 rounded-md">SUBJECT</th>
+                            <th class="p-2 rounded-md">YEAR LEVEL</th>
+                            <th class="p-2 rounded-md">SEMESTER</th>
+                            <th class="p-2 rounded-md">WEEKDAY</th>
+                            <th class="p-2 rounded-md">IN & OUT</th>
+                            {% comment %} <th class="p-2 rounded-md">INFO</th> {% endcomment %}
+                        </tr>
+                        {% if scheds_count < 1 %}
+                            <tr>
+                                <td colspan="10" class="p-4 text-gray-600 text-sm text-center">No schedule show. <a href="{% url 'Add_Schedule_Page' %}" class="text-blue-600">Assign Schedule<a></td>
+                            </tr>
+                        {% endif %}
+                        {% for sheds in page_obj %}
+                        <tr class="border boreder-2 hover:bg-gray-200 active:bg-gray-200 transition transition-delay-1 cursor-pointer">
+                            <td class="p-2">{{sheds.subject}}</td>
+                            <td class="p-2">{{sheds.subject.year}}</td>
+                            <td class="p-2">{{sheds.subject.semester}}</td>
+                            <td class="p-2">{{sheds.weekday}}</td>
+                            <td class="p-2">{{sheds.time_in}} - {{sheds.time_out}}</td>
+                            {% comment %} <td class="p-2">
+                                <a href="" class="bg-green-600 py-2 px-4 rounded-md text-white hover:bg-green-500 transition transition-delay-1 text-center object-center">View</a>
+                            </td> {% endcomment %}
+                        </tr>
+                        {% endfor %}
+                    </table>
+                    <div class="flex gap-2 items-center mx-2">
+                        <p class="px-4 py-2 float-left text-md text-[#18442D] text-xl">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.</p>
+                        <div class="flex gap-2 justify-end p-2">
+            
+                            {% if page_obj.has_previous %}
+                                <a href="?page=1" class="bg-gradient-to-b from-[#7F8B69] to-[#18442D] hover:from-[#52735D] hover:to-[#52735D] p-2 rounded-md shadow text-white font-bold transition transition-delay-1 text-sm">&laquo; first</a>
+                                <a href="?page={{ page_obj.previous_page_number }}" class="bg-gradient-to-b from-[#7F8B69] to-[#18442D] hover:from-[#52735D] hover:to-[#52735D] p-2 rounded-md shadow text-white font-bold transition transition-delay-1 text-sm">Prev</a>
+                            {% endif %}
+                            {% if page_obj.has_next %}
+                                <a href="?page={{ page_obj.next_page_number }}" class="bg-gradient-to-b from-[#7F8B69] to-[#18442D] hover:from-[#52735D] hover:to-[#52735D] p-2 rounded-md shadow text-white font-bold transition transition-delay-1 text-sm">Next</a>
+                                <a href="?page={{ page_obj.paginator.num_pages }}" class="bg-gradient-to-b from-[#7F8B69] to-[#18442D] hover:from-[#52735D] hover:to-[#52735D] p-2 rounded-md shadow text-white font-bold transition transition-delay-1 text-sm">Last &raquo;</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

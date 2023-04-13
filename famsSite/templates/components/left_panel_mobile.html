@@ -1,0 +1,71 @@
+{% load static %}
+{% with request.resolver_match.url_name as url_name %}
+<div class="md:hidden bg-[#52735D] shadow">
+    <button id="menu-toggle" class="md:hidden text-white font-bold py-4 px-8 rounded float-right">
+        <svg class="text-white fill-current h-8 w-8" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+            <title>Menu</title>
+            <path d="M0 3h20v2H0zM0 9h20v2H0zM0 15h20v2H0z"/>
+        </svg>
+    </button>
+    <span class="font-bold flex gap-4 text-white items-center">
+        <a href="/">
+            <img src="{% static 'images/sjc_logo2.png' %}" style="width: 4em;" class="pl-4 py-2 text-white md:hidden" />
+        </a>
+        FACULTY ATTENDANCE MONITORING SYSTEM
+    </span>
+</div>
+<!-- Sidebar Menu -->
+<div id="menu" class="md:hidden z-20 bg-[#52735D] w-64 space-y-6 pb-7 px-2 absolute inset-0 h-full inset-y-0 left-0 transform -translate-x-full transition duration-200 ease-in-out shadow overflow-y-auto max-h-screen-lg scrollbar-hide">
+    <div class="w-full h-full backdrop-blur-lg overflow-y-auto scrollbar-hide">
+    <!-- Sidebar Links -->
+        <a href="{% url 'DTR_Export' %}" class="font-bold text-white flex items-center justify-center">
+            <img src="{% static 'images/sjc_logo2.png' %}" style="width: 12em;" class="py-7" />
+        </a>
+        <div class="flex flex-col">
+            <label class="font-bold p-2 text-white">ATTENDANCE</label>
+            <div class="flex flex-col pl-4 gap-2">
+                <a href="{% url 'QRPage' %}" class="{% if url_name == 'QRPage'%} bg-[#355C41] border border-[#18442D] {% endif %} hover:bg-[#355C41] transition transition-delay-1 rounded-md p-2 text-white text-sm">QR Code Scan</a>
+                <a href="{% url 'Generate_QR_page' %}" class="{% if url_name == 'Generate_QR_page'%} bg-[#355C41] border border-[#18442D] {% endif %} hover:bg-[#355C41] transition transition-delay-1 rounded-md p-2 text-white text-sm">Generate employee QR</a>
+            </div>
+            <label class="font-bold p-2 text-white">RECORDS</label>
+            <div class="flex flex-col pl-4 gap-2">
+                <a href="{% url 'DTR_Export' %}" class="{% if url_name == 'DTR_Export'%} bg-[#355C41] border border-[#18442D] {% endif %} hover:bg-[#355C41] transition transition-delay-1 rounded-md p-2 text-white text-sm">Attendance Record</a>
+                <a href="{% url 'Employee_list' %}" class="{% if url_name == 'Employee_list' or url_name == 'Employee_page' %} bg-[#355C41] border border-[#18442D] {% endif %} hover:bg-[#355C41] transition transition-delay-1 rounded-md p-2 text-white text-sm">Employee</a>
+                <a href="{% url 'Department_list' %}" class="{% if url_name == 'Department_list'%} bg-[#355C41] border border-[#18442D] {% endif %} hover:bg-[#355C41] transition transition-delay-1 rounded-md p-2 text-white text-sm">Department</a>
+            </div>
+            <label class="font-bold p-2 text-white">MANAGE</label>
+            <div class="flex flex-col pl-4 gap-2">
+                <a href="{% url 'Add_Employee_Page' %}" class="{% if url_name == 'Add_Employee_Page'%} bg-[#355C41] border border-[#18442D] {% endif %} hover:bg-[#355C41] transition transition-delay-1 rounded-md p-2 text-white text-sm">Add Employee</a>
+                <a href="{% url 'Add_Department_Page' %}" class="{% if url_name == 'Add_Department_Page'%} bg-[#355C41] border border-[#18442D] {% endif %} hover:bg-[#355C41] transition transition-delay-1 rounded-md p-2 text-white text-sm">Add Department</a>
+                <a href="{% url 'Add_Subject_Page' %}" class="{% if url_name == 'Add_Subject_Page'%} bg-[#355C41] border border-[#18442D] {% endif %} hover:bg-[#355C41] transition transition-delay-1 rounded-md p-2 text-white text-sm">Add Subject</a>
+                <a href="{% url 'Add_Schedule_Page' %}" class="{% if url_name == 'Add_Schedule_Page'%} bg-[#355C41] border border-[#18442D] {% endif %} hover:bg-[#355C41] transition transition-delay-1 rounded-md p-2 text-white text-sm">Add Schedule</a>
+            </div>
+            <label class="font-bold p-2 text-white">ACCOUNT</label>
+            <div class="flex flex-col pl-4 gap-2">
+                {% if user.is_authenticated %}
+                    {% comment %} <a href="{% url 'Admin_dashboard' %}" class="{% if url_name == 'Admin_dashboard'%} bg-[#355C41] border border-[#18442D] {% endif %} hover:bg-[#355C41] transition transition-delay-1 rounded-md p-2 text-white text-sm">Dashboard</a> {% endcomment %}
+                    <a href="{% url 'User_logout' %}" class="hover:bg-[#355C41] transition transition-delay-1 rounded-md p-2 text-white text-sm">Logout</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript -->
+<script>
+    const menuToggle = document.getElementById('menu-toggle');
+    const menu = document.getElementById('menu');
+
+    menuToggle.addEventListener('click', () => {
+        menu.classList.toggle('-translate-x-full');
+    });
+
+    // Close the menu when a click is detected outside of the menu
+    document.addEventListener('click', (event) => {
+        const isClickInside = menu.contains(event.target) || menuToggle.contains(event.target);
+        if (!isClickInside && !menu.classList.contains('-translate-x-full')) {
+            menu.classList.add('-translate-x-full');
+        }
+    });
+</script>
+{% endwith %}

@@ -1,0 +1,95 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        
+        <title>{% block title %}{% endblock title %}</title>
+        {% block head_content %}{% endblock head_content %}
+        <link rel="stylesheet" href="{% static 'base.css' %}">
+        <link rel="icon" type="image/png" href="{% static 'images/sjc_icon.ico ' %}">
+        {% include './components/style.html' %}
+        <style id="smooth-scroll">
+            ::-webkit-scrollbar {
+                width: 4px;
+                background-color: transparent;
+              }
+               
+              ::-webkit-scrollbar-thumb {
+                background-color: #718096;
+                border-radius: 3px;
+              }
+               
+              ::-webkit-scrollbar-track {
+                background-color: transparent;
+              }
+               
+              ::-webkit-scrollbar-thumb:hover {
+                background-color: #4A5568;
+              }
+               
+              /* Hide scrollbar when not in use */
+              ::-webkit-scrollbar-thumb:vertical {
+                opacity: 0;
+                transition: all 0.3s ease-in-out;
+              }
+               
+              ::-webkit-scrollbar-thumb:vertical:hover {
+                opacity: 1;
+              }
+        </style>
+        <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+        <script src="https://cdn-tailwindcss.vercel.app/"></script>
+    </head>
+    <body class="gap-4" style="background-color: #F0F0F0;">
+        <div class="{% if user.is_authenticated %} md:grid grid-cols-6 {% endif %} ">
+
+            {% include "./components/loading.html" %}
+    
+            {% if user.is_authenticated %}
+                {% include "./components/left_panel.html" %}
+                {% include "./components/left_panel_mobile.html" %}
+            {% endif %}
+    
+            <div class="col-span-5 p-4">
+                {% block content %}
+                {% endblock content %}
+            </div>
+            {% comment %} {% if user.is_authenticated %}
+            {% include './components/right_panel.html' %}
+            {% endif %} {% endcomment %}
+        </div>
+        {% if user.is_authenticated %}
+            {% include "./components/footer.html" %}
+        {% endif %}
+
+        <script>
+            function updateDateTime() {
+                const now = new Date();
+                const dateTime = now.toLocaleString();
+                document.getElementById("date-time").innerHTML = dateTime;
+            }
+            setInterval(updateDateTime, 1000);
+            
+            document.addEventListener("DOMContentLoaded", function() {
+                document.querySelector(".loader-bg").style.display = "none";
+            });
+
+            $(document).ready(function() {
+                $('#myForm').submit(function() {
+                $('#loader').removeClass('hidden');
+                $('#submitButton').attr('disabled', true);
+                });
+            });
+
+            $(window).on('load', function() {
+                $('#loader').addClass('hidden');
+                $('#submitButton').attr('disabled', false);
+            });
+        </script>
+        {% block script %}{% endblock script %}
+    </body>
+</html>
